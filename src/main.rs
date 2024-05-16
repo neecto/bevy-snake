@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 
 use menu::menu_plugin::MenuPlugin;
+use crate::rabbit::rabbit_plugin::RabbitPlugin;
 use crate::shared::game_state::GameState;
 use crate::snake::snake_plugin::SnakePlugin;
 
 mod menu;
 mod shared;
 mod snake;
+mod rabbit;
 
 const FRAME_DELAY_MS: f64 = 300.0;
 
@@ -21,6 +23,7 @@ fn main() {
         .add_systems(Startup, setup_camera)
         .add_plugins(MenuPlugin)
         .add_plugins(SnakePlugin)
+        .add_plugins(RabbitPlugin)
         .run();
 }
 

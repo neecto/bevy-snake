@@ -1,8 +1,8 @@
 use bevy::math::Vec3;
 use bevy::prelude::{Assets, ColorMaterial, Commands, Entity, Mesh, Mut, Query, Rectangle, ResMut, Transform};
-use crate::snake::snake_chunk_component;
-use crate::snake::snake_chunk_component::SnakeChunk;
-use crate::snake::snake_head_component::{Direction, Head};
+use crate::snake::snake_components;
+use crate::snake::snake_components::SnakeChunk;
+use crate::snake::snake_components::{Direction, Head};
 
 pub fn init_snake(
     mut commands: Commands,
@@ -10,18 +10,18 @@ pub fn init_snake(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let tail_bundle = SnakeChunk::get_spawn_bundle(
-        meshes.add(Rectangle::new(snake_chunk_component::BODY_CHUNK_SIZE, snake_chunk_component::BODY_CHUNK_SIZE)).into(),
-        materials.add(snake_chunk_component::COLOR),
+        meshes.add(Rectangle::new(snake_components::BODY_CHUNK_SIZE, snake_components::BODY_CHUNK_SIZE)).into(),
+        materials.add(snake_components::COLOR),
         None,
-        snake_chunk_component::TAIL_START_POSITION,
+        snake_components::TAIL_START_POSITION,
     );
     let tail_entity = commands.spawn(tail_bundle).id();
 
     let head_bundle = SnakeChunk::get_spawn_bundle(
-        meshes.add(Rectangle::new(snake_chunk_component::BODY_CHUNK_SIZE, snake_chunk_component::BODY_CHUNK_SIZE)).into(),
-        materials.add(snake_chunk_component::COLOR),
+        meshes.add(Rectangle::new(snake_components::BODY_CHUNK_SIZE, snake_components::BODY_CHUNK_SIZE)).into(),
+        materials.add(snake_components::COLOR),
         Some(tail_entity),
-        snake_chunk_component::HEAD_START_POSITION,
+        snake_components::HEAD_START_POSITION,
     );
     let head_entity = commands.spawn(head_bundle).id();
     commands.entity(head_entity).insert(Head {
@@ -39,8 +39,8 @@ pub fn move_head(
     let position = get_head_next_position(head.3, head.1);
 
     let new_head = SnakeChunk::get_spawn_bundle(
-        meshes.add(Rectangle::new(snake_chunk_component::BODY_CHUNK_SIZE, snake_chunk_component::BODY_CHUNK_SIZE)).into(),
-        materials.add(snake_chunk_component::COLOR),
+        meshes.add(Rectangle::new(snake_components::BODY_CHUNK_SIZE, snake_components::BODY_CHUNK_SIZE)).into(),
+        materials.add(snake_components::COLOR),
         Some(head.0),
         position
     );
@@ -85,16 +85,16 @@ pub fn move_tail(
 fn get_head_next_position(head: &Head, transform: Mut<Transform>) -> Vec3 {
     match head.direction {
         Direction::Up => {
-            Vec3::new(transform.translation.x, transform.translation.y + snake_chunk_component::BODY_CHUNK_SIZE, transform.translation.z)
+            Vec3::new(transform.translation.x, transform.translation.y + snake_components::BODY_CHUNK_SIZE, transform.translation.z)
         }
         Direction::Down => {
-            Vec3::new(transform.translation.x, transform.translation.y - snake_chunk_component::BODY_CHUNK_SIZE, transform.translation.z)
+            Vec3::new(transform.translation.x, transform.translation.y - snake_components::BODY_CHUNK_SIZE, transform.translation.z)
         }
         Direction::Left => {
-            Vec3::new(transform.translation.x - snake_chunk_component::BODY_CHUNK_SIZE, transform.translation.y, transform.translation.z)
+            Vec3::new(transform.translation.x - snake_components::BODY_CHUNK_SIZE, transform.translation.y, transform.translation.z)
         }
         Direction::Right => {
-            Vec3::new(transform.translation.x + snake_chunk_component::BODY_CHUNK_SIZE, transform.translation.y, transform.translation.z)
+            Vec3::new(transform.translation.x + snake_components::BODY_CHUNK_SIZE, transform.translation.y, transform.translation.z)
         }
     }
 }

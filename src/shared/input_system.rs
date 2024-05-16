@@ -1,6 +1,6 @@
 use bevy::prelude::KeyCode::{ArrowDown, ArrowLeft, ArrowRight, ArrowUp};
 use bevy::prelude::{ButtonInput, KeyCode, Query, Res};
-use crate::snake::snake_head_component::{Direction, Head};
+use crate::snake::snake_components::{Direction, Head};
 
 pub fn handle_direction_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
