@@ -1,14 +1,12 @@
-use crate::components::head::{Direction, Head};
-use crate::components::snake_chunk;
-use crate::components::snake_chunk::SnakeChunk;
 use bevy::prelude::KeyCode::{ArrowDown, ArrowLeft, ArrowRight, ArrowUp};
 use bevy::prelude::{ButtonInput, KeyCode, Query, Res};
+use crate::snake::snake_head_component::{Direction, Head};
 
 pub fn handle_direction_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Head>,
 ) {
-    let mut q = query.get_single_mut();
+    let q = query.get_single_mut();
 
     if q.is_err() {
         return;
