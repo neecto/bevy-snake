@@ -8,7 +8,7 @@ pub const TAIL_START_POSITION: Vec3 = Vec3::new(0.0, 0.0, 1.0);
 pub const STEP_SIZE: f32 = BODY_CHUNK_SIZE;
 pub const COLOR: Color = Color::rgb(178. / 255.,73. / 255., 78. / 255.);
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct SnakeChunk {
     pub next_chunk: Option<Entity>
 }

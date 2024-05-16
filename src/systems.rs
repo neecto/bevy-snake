@@ -1,5 +1,4 @@
-pub mod shapes;
-pub mod mesh;
 pub mod game_init;
-pub mod snake_movement;
 pub mod input;
+pub mod head_movement;
+pub mod tail_movement;

@@ -5,7 +5,7 @@ use bevy::math::Vec3;
 use bevy::prelude::{ColorMaterial, Commands, Entity, Mesh, Mut, Query, Rectangle, ResMut, Transform, With};
 use crate::components::snake_chunk;
 
-pub fn move_snake(
+pub fn move_head(
     mut query: Query<(Entity, &mut Transform, &SnakeChunk, &Head)>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -20,7 +20,6 @@ pub fn move_snake(
         Some(head.0),
         position
     );
-
 
     let new_head_entity = commands.spawn(new_head).id();
     commands.entity(new_head_entity).insert(Head {

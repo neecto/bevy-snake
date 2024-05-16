@@ -14,7 +14,7 @@ pub fn init(
 
     let tail_bundle = SnakeChunk::get_spawn_bundle(
         meshes.add(Rectangle::new(snake_chunk::BODY_CHUNK_SIZE, snake_chunk::BODY_CHUNK_SIZE)).into(),
-        materials.add(Color::GOLD),
+        materials.add(snake_chunk::COLOR),
         None,
         snake_chunk::TAIL_START_POSITION,
     );
