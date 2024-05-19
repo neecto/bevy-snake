@@ -1,5 +1,5 @@
 use bevy::app::{App, FixedUpdate, Plugin, Update};
-use bevy::prelude::{in_state, IntoSystemConfigs, OnEnter};
+use bevy::prelude::{in_state, IntoSystemConfigs, OnEnter, OnExit};
 
 use crate::shared::game_state::GameState;
 use crate::shared::input_system;
@@ -18,7 +18,11 @@ impl Plugin for SnakePlugin {
             )
             .add_systems(
                 Update,
-                (input_system::handle_direction_input,).run_if(in_state(GameState::InGame)),
+                input_system::handle_direction_input.run_if(in_state(GameState::InGame)),
+            )
+            .add_systems(
+                OnExit(GameState::InGame),
+                snake_systems::cleanup
             );
     }
 }

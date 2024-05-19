@@ -1,10 +1,9 @@
+use crate::menu::menu_components;
 use bevy::hierarchy::BuildChildren;
 use bevy::prelude::{
-    AlignItems, BorderColor, ButtonBundle, Color, Commands, default,
-    Entity, FlexDirection, JustifyContent, NodeBundle, Style, TextBundle, TextStyle, UiRect, Val,
+    default, AlignItems, BorderColor, ButtonBundle, Color, Commands, Component, Entity,
+    FlexDirection, JustifyContent, NodeBundle, Style, TextBundle, TextStyle, UiRect, Val,
 };
-
-use crate::menu::menu_data::MenuButtonAction;
 
 pub const NORMAL_BUTTON: Color = Color::rgb(0.15, 0.15, 0.15);
 pub const HOVERED_BUTTON: Color = Color::rgb(0.25, 0.25, 0.25);
@@ -37,8 +36,18 @@ pub fn spawn_menu(commands: &mut Commands) -> Entity {
     let container = commands.spawn(container_node).id();
     let title = commands.spawn(title_node).id();
 
-    let play_button = spawn_button(commands, "Play", MenuButtonAction::Play);
-    let exit_button = spawn_button(commands, "Exit", MenuButtonAction::Exit);
+    let play_button = spawn_button(
+        commands,
+        "Play",
+        Val::Px(150.0),
+        menu_components::MenuButtonAction::Play,
+    );
+    let exit_button = spawn_button(
+        commands,
+        "Exit",
+        Val::Px(150.0),
+        menu_components::MenuButtonAction::Exit,
+    );
     commands
         .entity(container)
         .push_children(&[title, play_button, exit_button]);
@@ -46,10 +55,60 @@ pub fn spawn_menu(commands: &mut Commands) -> Entity {
     container
 }
 
-pub fn spawn_button(commands: &mut Commands, text: &str, action: MenuButtonAction) -> Entity {
+pub fn spawn_gameover_screen(commands: &mut Commands) -> Entity {
+    let container_node = NodeBundle {
+        style: Style {
+            // center button
+            width: Val::Percent(100.),
+            height: Val::Percent(100.),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },
+        ..default()
+    };
+
+    let title_node = TextBundle::from_section(
+        "Game Over",
+        TextStyle {
+            font_size: 40.0,
+            color: TEXT,
+            ..default()
+        },
+    );
+
+    let container = commands.spawn(container_node).id();
+    let title = commands.spawn(title_node).id();
+
+    let play_button = spawn_button(
+        commands,
+        "Play Again",
+        Val::Px(250.0),
+        menu_components::GameOverScreenAction::PlayAgain,
+    );
+    let exit_button = spawn_button(
+        commands,
+        "Exit",
+        Val::Px(250.0),
+        menu_components::GameOverScreenAction::Exit,
+    );
+    commands
+        .entity(container)
+        .push_children(&[title, play_button, exit_button]);
+
+    container
+}
+
+fn spawn_button<T: Component>(
+    commands: &mut Commands,
+    text: &str,
+    width: Val,
+    action: T,
+) -> Entity {
     let button_node = ButtonBundle {
         style: Style {
-            width: Val::Px(150.0),
+            width: width,
             height: Val::Px(65.0),
             // horizontally center child text
             justify_content: JustifyContent::Center,
