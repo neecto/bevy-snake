@@ -1,4 +1,6 @@
 use crate::snake::snake_consts::BODY_CHUNK_SIZE;
 
-pub const FIELD_WIDTH_PX: u32 = (BODY_CHUNK_SIZE * 31.) as u32;
-pub const FIELD_HEIGHT_PX: u32 = (BODY_CHUNK_SIZE * 21.) as u32;
+pub const FIELD_WIDTH_POSITIONS: u32 = 31;
+pub const FIELD_HEIGHT_POSITIONS: u32 = 21;
+pub const FIELD_WIDTH_PX: u32 = BODY_CHUNK_SIZE as u32 * FIELD_WIDTH_POSITIONS;
+pub const FIELD_HEIGHT_PX: u32 = BODY_CHUNK_SIZE as u32 * FIELD_HEIGHT_POSITIONS;

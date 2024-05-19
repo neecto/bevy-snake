@@ -23,13 +23,21 @@ pub fn init_field(mut commands: Commands) {
         FieldCamera,
     ));
 
+    let field_transform = Transform {
+        translation: Vec3::new(0.0, 0.0, 0.0),
+        scale: Vec3::new(FIELD_WIDTH_PX as f32, FIELD_HEIGHT_PX as f32, 0.0),
+        ..default()
+    };
+
+    let field_bb = Aabb2d::new(
+        field_transform.translation.truncate(),
+        field_transform.scale.truncate() / 2.
+    );
+    println!("Spawned field {:#?}", field_bb);
+
     commands.spawn((
         SpriteBundle {
-            transform: Transform {
-                translation: Vec3::new(0.0, 0.0, 0.0),
-                scale: Vec3::new(FIELD_WIDTH_PX as f32, FIELD_HEIGHT_PX as f32, 0.0),
-                ..default()
-            },
+            transform: field_transform,
             sprite: Sprite {
                 color: field_color,
                 ..default()

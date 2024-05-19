@@ -38,7 +38,6 @@ pub fn update_rabbit(
     }
 
     let rabbit_position = Rabbit::get_next_position();
-    println!("Rabbit spawned at {}", rabbit_position);
 
     let rabbit_bundle = Rabbit::get_spawn_bundle(
         meshes.add(Rectangle::new(rabbit_components::SIZE, rabbit_components::SIZE)).into(),

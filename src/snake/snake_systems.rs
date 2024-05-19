@@ -1,12 +1,13 @@
+use crate::field::field_events::RabbitEatenEvent;
 use crate::rabbit::rabbit_components;
 use crate::rabbit::rabbit_components::Rabbit;
-use crate::snake::snake_consts;
 use crate::snake::snake_components::SnakeChunk;
 use crate::snake::snake_components::{Direction, Head};
+use crate::snake::snake_consts;
 use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use bevy::math::Vec3;
-use bevy::prelude::{Assets, ColorMaterial, Commands, Entity, EventWriter, Mesh, Mut, Query, Rectangle, ResMut, Transform, With};
-use crate::field::field_events::RabbitEatenEvent;
+use bevy::prelude::{Assets, ColorMaterial, Commands, Entity, EventWriter, Mesh, Mut, NextState, Query, Rectangle, ResMut, Transform, With, Without};
+use crate::shared::game_state::GameState;
 
 pub fn init_snake(
     mut commands: Commands,
@@ -44,13 +45,20 @@ pub fn init_snake(
 }
 
 pub fn move_head(
-    mut query: Query<(Entity, &mut Transform, &SnakeChunk, &Head)>,
+    mut head_query: Query<(Entity, &mut Transform, &Head)>,
+    chunks_query: Query<&Transform, (With<SnakeChunk>, Without<Head>)>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut game_state: ResMut<NextState<GameState>>
 ) {
-    let head = query.single_mut();
-    let position = get_head_next_position(head.3, head.1);
+    let head = head_query.single_mut();
+    let position = get_head_next_position(head.2, head.1);
+
+    if is_eating_itself(&position, chunks_query) {
+        game_state.set(GameState::GameOver);
+        return
+    }
 
     let new_head = SnakeChunk::get_spawn_bundle(
         meshes
@@ -66,7 +74,7 @@ pub fn move_head(
 
     let new_head_entity = commands.spawn(new_head).id();
     commands.entity(new_head_entity).insert(Head {
-        direction: head.3.direction,
+        direction: head.2.direction,
     });
 
     commands.entity(head.0).remove::<Head>();
@@ -77,7 +85,7 @@ pub fn move_tail(
     head_query: Query<&Transform, With<Head>>,
     mut snake_query: Query<(Entity, &mut SnakeChunk)>,
     rabbit_query: Query<&Transform, With<Rabbit>>,
-    mut rabbit_eaten_events: EventWriter<RabbitEatenEvent>
+    mut rabbit_eaten_events: EventWriter<RabbitEatenEvent>,
 ) {
     let is_eating = is_eating_rabbit(head_query, rabbit_query);
     if is_eating {
@@ -110,10 +118,7 @@ pub fn move_tail(
     }
 }
 
-pub fn cleanup(
-    mut commands: Commands,
-    mut snake_query: Query<Entity, With<SnakeChunk>>,
-) {
+pub fn cleanup(mut commands: Commands, snake_query: Query<Entity, With<SnakeChunk>>) {
     for chunk in snake_query.iter() {
         commands.entity(chunk).despawn()
     }
@@ -144,6 +149,19 @@ fn get_head_next_position(head: &Head, transform: Mut<Transform>) -> Vec3 {
     }
 }
 
+fn is_eating_itself(
+    head_position: &Vec3,
+    chunks_query: Query<&Transform, (With<SnakeChunk>, Without<Head>)>
+) -> bool {
+    for body_chunk in chunks_query.iter() {
+        if body_chunk.translation.eq(head_position) {
+            return true;
+        }
+    }
+
+    false
+}
+
 fn is_eating_rabbit(
     mut head_query: Query<&Transform, With<Head>>,
     mut rabbit_query: Query<&Transform, With<Rabbit>>,
@@ -159,19 +177,13 @@ fn is_eating_rabbit(
 
     let rabbit_box = Aabb2d::new(
         rabbit_transform.translation.truncate(),
-        Vec3::new(
-            rabbit_transform.translation.x + rabbit_components::SIZE,
-            rabbit_transform.translation.x + rabbit_components::SIZE,
-            1.
-        ).truncate(),
+        Vec3::new(rabbit_components::SIZE, rabbit_components::SIZE, 1.).truncate() / 2.,
     );
-    let head_box = Aabb2d::new(
-        head.translation.truncate(),
-        head.scale.truncate() / 2.,
-    );
+    let head_box = Aabb2d::new(head.translation.truncate(), head.scale.truncate() / 2.);
 
     let intersects = head_box.intersects(&rabbit_box);
     if intersects {
+        println!("Rabbit box: {:#?}", rabbit_box);
         println!("Rabbit eaten at {}", head.translation);
     }
     intersects
